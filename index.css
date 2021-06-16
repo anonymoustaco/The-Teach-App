@@ -1,41 +1,38 @@
-html,
-body {
-	padding: 0;
-	margin: 0;
-	background: transparent;
+html {
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+	font-size: 3em;
 }
-
-/* Use OS default fonts */
-body {
-	font-family:
-		system-ui,
-		-apple-system,
-		'Segoe UI',
-		Roboto,
-		Helvetica,
-		Arial,
-		sans-serif,
-		'Apple Color Emoji',
-		'Segoe UI Emoji';
-	text-rendering: optimizeLegibility;
-	font-feature-settings: 'liga', 'clig', 'kern';
-}
-
-header {
-	position: absolute;
-	width: 500px;
-	height: 250px;
-	top: 50%;
-	left: 50%;
-	margin-top: -125px;
-	margin-left: -250px;
+h1, h2, p {
 	text-align: center;
 }
-
-header h1 {
-	font-size: 60px;
-	font-weight: 200;
-	margin: 0;
-	padding: 0;
-	opacity: 0.7;
+h1 {
+	display: inline;
+}
+.wrap {
+	text-align: center;
+}
+#red {
+	color: red;
+}
+#orange {
+	color: orange;
+}
+#yellow {
+	color: #FF0;
+}
+#green {
+	color: green;
+}
+#blue {
+	color: blue;
+}
+#purple {
+	color: purple;
+}
+pre {
+	font-size: .40em;
+	text-align: center;
+	position: absolute;
+	bottom: 0px;
+	left: 40%;
 }
