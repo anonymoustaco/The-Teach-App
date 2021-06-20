@@ -5,7 +5,7 @@ const {app, BrowserWindow, Menu} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
-const debug = require('electron-debug');
+//const debug = require('electron-debug');
 const contextMenu = require('electron-context-menu');
 const menu = require('./menu.js');
 
@@ -34,7 +34,7 @@ const createMainWindow = async () => {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false
-			},
+		},
 		title: app.name,
 		show: false,
 		width: 600,
@@ -50,7 +50,6 @@ const createMainWindow = async () => {
 		// For multiple windows store them in an array
 		mainWindow = undefined;
 	});
-	
 	await win.loadFile(path.join(__dirname, 'login.html'));
 	await win.loadFile(path.join(__dirname, 'index.html'));
 	return win;
@@ -87,5 +86,4 @@ app.on('activate', async () => {
 	await app.whenReady();
 	Menu.setApplicationMenu(menu);
 	mainWindow = await createMainWindow();
-
 })();
