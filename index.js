@@ -5,7 +5,6 @@ const {app, BrowserWindow, Menu} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
-//const debug = require('electron-debug');
 const contextMenu = require('electron-context-menu');
 const menu = require('./menu.js');
 
