@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const {app, BrowserWindow, Menu} = require('electron');
+
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
@@ -30,6 +31,10 @@ let mainWindow;
 
 const createMainWindow = async () => {
 	const win = new BrowserWindow({
+		webPreferences: {
+			nodeIntegration: true,
+			contextIsolation: false
+			},
 		title: app.name,
 		show: false,
 		width: 600,
@@ -45,9 +50,9 @@ const createMainWindow = async () => {
 		// For multiple windows store them in an array
 		mainWindow = undefined;
 	});
-
+	
+	await win.loadFile(path.join(__dirname, 'login.html'));
 	await win.loadFile(path.join(__dirname, 'index.html'));
-
 	return win;
 };
 

@@ -1,9 +1,9 @@
 {
-	"name": "app-name",
-	"productName": "App Name",
-	"version": "0.0.0",
-	"description": "The best app ever",
-	"license": "MIT",
+	"name": "teachapp",
+	"productName": "The Teach App",
+	"version": "0.0.1",
+	"description": "The App for teachers!",
+	"license": "",
 	"repository": "sindresorhus/electron-boilerplate",
 	"author": {
 		"name": "Your Name",
@@ -16,7 +16,7 @@
 		"test": "npm run lint",
 		"start": "electron .",
 		"pack": "electron-builder --dir",
-		"dist": "electron-builder --macos --linux --windows",
+		"dist": "electron-builder --windows",
 		"release": "np"
 	},
 	"dependencies": {
@@ -47,7 +47,7 @@
 		"appId": "com.company.AppName",
 		"mac": {
 			"category": "public.app-category.social-networking",
-			"darkModeSupport": true
+			"darkModeSupport": false
 		},
 		"dmg": {
 			"iconSize": 160,
