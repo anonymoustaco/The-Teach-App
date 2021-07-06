@@ -99,6 +99,7 @@ function build(path) {
             try {
             fs.writeFileSync(path, JSON.stringify(file))
             document.body.innerHTML = openHml;
+            ipc.send('file-made')
             events()
             return;
             }

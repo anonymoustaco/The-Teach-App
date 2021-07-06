@@ -94,6 +94,20 @@ ipc.on('error', (event, arg) => {
 	console.log(arg)
 	dialog.showErrorBox("An error has occured", toString(arg))
 })
+ipc.on('file-made', (event, arg) => {
+	const options = {
+		type: 'info',
+		icon : './icon.png',
+		buttons: ['Ok'],
+		defaultId: 2,
+		message: 'Your course was made successfully!',
+	  };
+	
+	  dialog.showMessageBox(null, options, (response, checkboxChecked) => {
+		console.log(response);
+		console.log(checkboxChecked);
+	  });
+})
 ipc.on('openSave', (event, arg) => {
 	const options = {
 		// See place holder 1 in above image
