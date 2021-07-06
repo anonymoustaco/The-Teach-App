@@ -3,6 +3,9 @@ html {
 	font-size: 3em;
 	text-align: center;
 }
+input[type="text"] {
+    font-size:25px;
+}
 a {
 	font-size: 1.5em;
 }
@@ -32,6 +35,35 @@ h1 {
 }
 #purple {
 	color: purple;
+}
+input {
+	padding: 1%;
+	margin: 1%
+}
+.open, button {
+	color: rgb(140, 0, 0);
+	padding: 32px 48px;
+	font-size: x-large;
+	background-color: #FFD;
+	border: none;
+	border: 2px solid black;
+	border-radius: 15px;
+	margin: 2%;
+
+}
+.open:active {
+	border: none;
+	border: 2px solid black;
+	outline: none;
+}
+.open, button:hover {
+	border: none;
+	border: 2px solid black;
+	cursor: pointer;
+	border-radius: 25px;
+}
+button:hover {
+	outline: none;
 }
 pre {
 	font-size: .40em;

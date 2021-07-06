@@ -4,7 +4,6 @@
 		
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="index.css" />
-		<link rel="stylesheet" href="login.css" />
 		</head>
 		<body>
 			
@@ -13,10 +12,14 @@
 				<img src="icon.png" />
 			</div>
 			<br>
-			<h2> Click to Login:<h2>
-				<a href="login.html"><button>Login</button></a>
+			<h2>Choose an option:</h2>
+			<button class="open" id="open">Open a Course</button>
+			<button class="open" id="make">Make a Course</button>			
 			<p><span id="red">A</span><span id="orange">B</span><span id="yellow">C</span><span id="green">1</span><span id="blue">2</span><span id="purple">3</span></p>
 			<pre>&copy; Copyright 2021 Thomas-Humphrey Development. All rights reserved.</pre>
 	</div>
+	<script>
+		require('./render.js')
+	</script>
 	</body>
 </html>

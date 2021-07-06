@@ -1,7 +1,8 @@
 'use strict';
 const path = require('path');
-const {app, BrowserWindow, Menu} = require('electron');
-
+const {app, BrowserWindow, Menu, dialog} = require('electron');
+const electron = require('electron')
+const ipc = electron.ipcMain
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
@@ -36,8 +37,8 @@ const createMainWindow = async () => {
 		},
 		title: app.name,
 		show: false,
-		width: 600,
-		height: 400
+		width: 1200,
+		height: 800
 	});
 
 	win.on('ready-to-show', () => {
@@ -49,7 +50,6 @@ const createMainWindow = async () => {
 		// For multiple windows store them in an array
 		mainWindow = undefined;
 	});
-	await win.loadFile(path.join(__dirname, 'login.html'));
 	await win.loadFile(path.join(__dirname, 'index.html'));
 	return win;
 };
@@ -68,7 +68,69 @@ app.on('second-instance', () => {
 		mainWindow.show();
 	}
 });
-
+ipc.on('open', (event, arg) => {
+	const options = {
+		// See place holder 1 in above image
+		title : "Open a Course", 
+		
+		// See place holder 2 in above image
+		defaultPath : "C\\Users",
+		
+		// See place holder 3 in above image
+		buttonLabel : "Open",
+		
+		// See place holder 4 in above image
+		filters :[
+		 {name: 'Teach App Course File', extensions: ['crse']}
+		],
+		properties: ['openFile']
+	   }
+	   
+	   dialog.showOpenDialog(null, options).then((arg) => {
+		   event.sender.send('openFilePath', arg.filePaths[0])
+	   })
+})
+ipc.on('error', (event, arg) => {
+	console.log(arg)
+	dialog.showErrorBox("An error has occured", toString(arg))
+})
+ipc.on('openSave', (event, arg) => {
+	const options = {
+		// See place holder 1 in above image
+		title : "Make a new course", 
+		
+		// See place holder 2 in above image
+		defaultPath : "C:\\Users",
+		
+		// See place holder 3 in above image
+		buttonLabel : "Save",
+		
+		// See place holder 4 in above image
+		filters :[
+		 {name: 'Teach App Course File', extensions: ['crse']}
+		],
+		properties: ['openFile']
+	   }
+	dialog.showSaveDialog(null, options).then((arg) => {
+		event.sender.send('savePath', arg)
+	})
+})
+ipc.on('error-box-nan', (event, arg) => {
+	dialog.showErrorBox("Error.", "Please use a valid number for the \"Length of unit\" field.")
+})
+ipc.on('error-box-fill-all', (event, arg) => {
+	dialog.showErrorBox("Error.", "Please fill out all fields in ths \"Add new Unit\" section.")
+})
+ipc.on('error-box-nan-course', (event, arg) => {
+	dialog.showErrorBox("Error.", "Please use a valid number for the \"Length in weeks\" field.")
+})
+ipc.on('error-box-fill-all-all', (event, arg) => {
+	dialog.showErrorBox("Error.", "Please fill out all fields.")
+})
+ipc.on('build-done', (event, arg) => {
+	let options;
+	dialog.showMessageBox(null, options)
+})
 app.on('window-all-closed', () => {
 	if (!is.macos) {
 		app.quit();
