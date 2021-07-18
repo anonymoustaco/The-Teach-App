@@ -96,7 +96,7 @@ ipc.on('error', (event, arg) => {
 })
 ipc.on('file-made', (event, arg) => {
 	const options = {
-		type: 'info',
+		type: null,
 		icon : './icon.png',
 		buttons: ['Ok'],
 		defaultId: 2,

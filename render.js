@@ -2,6 +2,8 @@ const fs = require('fs');
 const electron = require('electron')
 const ipc = electron.ipcRenderer
 const d3 = require('./d3.min.js')
+const res = electron.screen
+
 const openHml = `
 <!doctype html>
 <html>
@@ -36,6 +38,7 @@ Number of Weeks: <input id="length" required/><br>
 Add a Unit: &emsp;&emsp;&emsp; Name of unit  <input id="unit" required>Length of Unit: <input id="unitLen" required><button id="add" type="submit">Add Unit</button><br>
 <button id="submit">Make this Course!</button><br>
 `
+
 function calculateInterval(a, l) {
     if (l == 0) {
         return 0
@@ -46,9 +49,18 @@ function calculateInterval(a, l) {
     }
     return final
 }
-
-
+function getScale (v, s) {
+    let largest = v.reduce((a,b) => {
+        return Math.max(a,b)
+    })
+    let c = (s/largest)/v.length
+    return c
+}
 function vis (arg) {
+    const bar_width = 30
+    const padding = 0
+    const w = 2000
+    const h = 1000
     //clear DOM
     document.body.innerHTML = "";
     //convert data
@@ -58,17 +70,15 @@ function vis (arg) {
     let dataset = []
     let units = data.units
     for (let i = 0; i < units.length; i++) {
-        labels.push(units[i].unitName)
-        dataset.push(units[i].unitLength)
+        let name = units[i].unitName
+        console.log(name)
+        labels.push(name)
+        let len = units[i].unitLength
+        console.log(len)
+        dataset.push(len)
     }
-    console.log(dataset, labels, data)
+    const m = getScale(dataset, w)
     //d3
-    const bar_width = 30
-    const padding = 0
-    const w = 2000
-    const h = 1000
-    const m = 30
-
     let svg = d3.select('body')
         .append('svg')
         .attr('width', w)
@@ -90,7 +100,7 @@ function vis (arg) {
         })
         .attr("fill", "#d02420")
     svg.selectAll("text")
-    .data(dataset)
+    .data(labels)
     .enter()
     .append("text")
     .attr('x', (d, i) => {
@@ -108,10 +118,7 @@ function vis (arg) {
         }
         return d
     })
-    .attr('fill', (d) => {
-        if (d <= 2) {
-            return "white"
-        }
+    .attr('fill', () => {
         return "white"
     })
     .text((d) => {
