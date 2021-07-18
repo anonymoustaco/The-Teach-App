@@ -1,6 +1,7 @@
 const fs = require('fs');
 const electron = require('electron')
 const ipc = electron.ipcRenderer
+const d3 = require('./d3.min.js')
 const openHml = `
 <!doctype html>
 <html>
@@ -27,7 +28,6 @@ const openHml = `
 	</script>
 	</body>
 </html>
-
 `
 const buildHtml = `
 <link rel="stylesheet" href="index.css" />
@@ -36,6 +36,88 @@ Number of Weeks: <input id="length" required/><br>
 Add a Unit: &emsp;&emsp;&emsp; Name of unit  <input id="unit" required>Length of Unit: <input id="unitLen" required><button id="add" type="submit">Add Unit</button><br>
 <button id="submit">Make this Course!</button><br>
 `
+function calculateInterval(a, l) {
+    if (l == 0) {
+        return 0
+    }
+    let final = 0
+    for (let i = 0; i < l; i++) {
+        final += a[i]
+    }
+    return final
+}
+
+
+function vis (arg) {
+    //clear DOM
+    document.body.innerHTML = "";
+    //convert data
+    const raw = fs.readFileSync(arg, null)
+    const data  = JSON.parse(raw)
+    let labels = []
+    let dataset = []
+    let units = data.units
+    for (let i = 0; i < units.length; i++) {
+        labels.push(units[i].unitName)
+        dataset.push(units[i].unitLength)
+    }
+    console.log(dataset, labels, data)
+    //d3
+    const bar_width = 30
+    const padding = 0
+    const w = 2000
+    const h = 1000
+    const m = 30
+
+    let svg = d3.select('body')
+        .append('svg')
+        .attr('width', w)
+        .attr('height', h)
+    svg.selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append('rect')
+        .attr('x', function (d, i) {
+            //console.log(i)
+            return (calculateInterval(dataset, i))*m
+        })
+        .attr('y', function(d, i){
+            return i *(bar_width + padding)
+        })
+        .attr('height', bar_width)
+        .attr('width', function (d) {
+            return d*m
+        })
+        .attr("fill", "#d02420")
+    svg.selectAll("text")
+    .data(dataset)
+    .enter()
+    .append("text")
+    .attr('x', (d, i) => {
+        return ((calculateInterval(dataset, i))*m)+10
+    })
+    .attr('fill', "white")
+    .attr('font-family', 'sans-serif') 
+    .attr('font-size', '11px')
+    .attr("y", (d, i) => {
+        return i * (bar_width) + 15
+    })
+    .text((d, i) => {
+        if (d == 0) {
+            return ""
+        }
+        return d
+    })
+    .attr('fill', (d) => {
+        if (d <= 2) {
+            return "white"
+        }
+        return "white"
+    })
+    .text((d) => {
+        return d
+    })
+}
 function events () {
     document.getElementById('open').addEventListener('click', () => {
         console.log('click')
@@ -54,7 +136,6 @@ function events () {
         console.log("build done")
     })
 }
-
 function build(path) {
     let units = []
     document.body.innerText = "";
@@ -90,7 +171,7 @@ function build(path) {
         if (name == "" || length == "") {
             ipc.send("error-box-fill-all-all")
         }
-        else {
+        if ((!(isNaN(length))) && (name != "" && length != "")) {
             const file = {
                 "name" : name,
                 "length" : length,
@@ -113,13 +194,17 @@ function build(path) {
     }
     })
 }
+
 //open event listener and  IPC for the filepath
 document.getElementById('open').addEventListener('click', () => {
     console.log('click')
     ipc.send('open')
 })
 ipc.on('openFilePath', (event, arg) => {
-    console.log(arg)
+    console.log(arg.filePaths[0])
+    if (!(arg.canceled)) {
+        vis(arg.filePaths[0])
+    }
 })
 //save event listener and IPC for filepath
 document.getElementById('make').addEventListener("click", () => {

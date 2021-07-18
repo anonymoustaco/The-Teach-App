@@ -74,7 +74,7 @@ ipc.on('open', (event, arg) => {
 		title : "Open a Course", 
 		
 		// See place holder 2 in above image
-		defaultPath : "C\\Users",
+		defaultPath : "C://Users",
 		
 		// See place holder 3 in above image
 		buttonLabel : "Open",
@@ -87,7 +87,7 @@ ipc.on('open', (event, arg) => {
 	   }
 	   
 	   dialog.showOpenDialog(null, options).then((arg) => {
-		   event.sender.send('openFilePath', arg.filePaths[0])
+		   event.sender.send('openFilePath', arg)
 	   })
 })
 ipc.on('error', (event, arg) => {
