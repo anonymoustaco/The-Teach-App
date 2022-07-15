@@ -1,9 +1,10 @@
 const fs = require('fs');
 const electron = require('electron')
 const ipc = electron.ipcRenderer
-const d3 = require('./d3.min.js')
+const d3 = require('./d3.min.js');
+const { strict } = require('assert');
+const { EventEmitter } = require('stream');
 const res = electron.screen
-
 const openHml = `
 <!doctype html>
 <html>
@@ -37,6 +38,7 @@ Name of Course: <input id="name" required/><br>
 Number of Weeks: <input id="length" required/><br>
 Add a Unit: &emsp;&emsp;&emsp; Name of unit  <input id="unit" required>Length of Unit: <input id="unitLen" required><button id="add" type="submit">Add Unit</button><br>
 <button id="submit">Make this Course!</button><br>
+<div>Number of weeks left: <span id="weeks-left"></span></div>
 `
 
 function calculateInterval(a, l) {
@@ -53,16 +55,18 @@ function getScale (v, s) {
     let largest = v.reduce((a,b) => {
         return Math.max(a,b)
     })
-    let c = (s/largest)/v.length
+    let c = (s/largest)/v.length/0.75
     return c
 }
 function vis (arg) {
-    const bar_width = 30
+    const bar_width = 70
     const padding = 0
     const w = 2000
     const h = 1000
     //clear DOM
     document.body.innerHTML = "";
+    document.write('<link rel="stylesheet" href="index.css" />')
+
     //convert data
     const raw = fs.readFileSync(arg, null)
     const data  = JSON.parse(raw)
@@ -77,6 +81,7 @@ function vis (arg) {
         console.log(len)
         dataset.push(len)
     }
+    document.write('<h2>Course: ' + String(data.name) + '</h2>')
     const m = getScale(dataset, w)
     //d3
     let svg = d3.select('body')
@@ -106,23 +111,18 @@ function vis (arg) {
     .attr('x', (d, i) => {
         return ((calculateInterval(dataset, i))*m)+10
     })
-    .attr('fill', "white")
+    .attr('fill', "#FFFFDD")
     .attr('font-family', 'sans-serif') 
-    .attr('font-size', '11px')
+    .attr('font-size', '14px')
     .attr("y", (d, i) => {
         return i * (bar_width) + 15
     })
     .text((d, i) => {
-        if (d == 0) {
-            return ""
-        }
-        return d
+        return d + "\t" + dataset[String(i)]
     })
-    .attr('fill', () => {
-        return "white"
-    })
-    .text((d) => {
-        return d
+    document.write('<button id="reload">Go Back to Home</button>')
+    document.getElementById('reload').addEventListener('click', () => {
+        ipc.send('reload')
     })
 }
 function events () {
@@ -142,8 +142,17 @@ function events () {
         build((arg.filePath))
         console.log("build done")
     })
+    ipc.on('build-file-from-bar', (event, arg) => {
+        console.log(event, arg)
+    })
+    document.getElementById('change').addEventListener('click', () => {
+        ipc.send("showchangelog");
+        console.log('1')
+    })
 }
+events()
 function build(path) {
+    let weeks_used = 0
     let units = []
     document.body.innerText = "";
     document.write(buildHtml)
@@ -151,23 +160,35 @@ function build(path) {
     //event listeners
     //add unit
     document.getElementById('add').addEventListener('click', () => {
-        const unitLen = document.getElementById('unitLen')
+        const length = document.getElementById('length').value
+        let unitLen = document.getElementById('unitLen')
         const name  = document.getElementById('unit')
-        const len = Number(unitLen.value)
-        if (isNaN(len)) {
-            ipc.send('error-box-nan')
-        }
+        unitLen = Number(unitLen.value)
+        const len = unitLen
+        
+        //document.getElementById('weeks-left').innerHTML = document.getElementById('length').value - weeks_used
         if (unitLen.value == "" || name.value == "") {
             ipc.send("error-box-fill-all")
         }
-        else {
-            document.write("<br><strong>Unit Name:</strong> " + name.value + "  <strong>Unit Length: </strong>" + len)
-            units.push({"unitName" : name.value, "unitLength" : len})
-            console.log(units)
-            document.getElementById('unit').value = ""
+        if (isNaN(len)) {
+            ipc.send('error-box-nan')
             document.getElementById('unitLen').value = ""
         }
+        if (!(unitLen.value == "" || name.value == "") && !(isNaN(len))) {
+            if (length - weeks_used - unitLen > -1) {
+                document.write("<br><strong>Unit Name:</strong> " + name.value + "  <strong>Unit Length: </strong>" + len)
+                console.log((document.getElementById('length') - weeks_used) - unitLen.value)
+                weeks_used += unitLen;
+                units.push({"unitName" : name.value, "unitLength" : len})
+                console.log(units)
+                document.getElementById('unit').value = ""
+                document.getElementById('unitLen').value = ""
+        }}
     })
+    document.getElementById('length').addEventListener('input', () => {
+        document.getElementById('weeks-left').innerHTML = document.getElementById('length').value - weeks_used
+    })
+    
     //submit
     document.getElementById('submit').addEventListener('click', () => {
         const name = document.getElementById('name').value

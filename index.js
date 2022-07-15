@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const path = require('path');
 const {app, BrowserWindow, Menu, dialog} = require('electron');
 const electron = require('electron')
@@ -7,8 +8,8 @@ const ipc = electron.ipcMain
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
 const contextMenu = require('electron-context-menu');
-const menu = require('./menu.js');
 
+ 
 unhandled();
 contextMenu();
 
@@ -30,6 +31,7 @@ app.setAppUserModelId('com.company.AppName');
 let mainWindow;
 
 const createMainWindow = async () => {
+	Menu.setApplicationMenu(Menu.buildFromTemplate([]))
 	const win = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true,
@@ -37,13 +39,13 @@ const createMainWindow = async () => {
 		},
 		title: app.name,
 		show: false,
-		width: 1200,
-		height: 800
+		width: 1900,
+		height: 1000
 	});
 
 	win.on('ready-to-show', () => {
 		win.show();
-	});
+	}); 
 
 	win.on('closed', () => {
 		// Dereference the window
@@ -94,9 +96,12 @@ ipc.on('error', (event, arg) => {
 	console.log(arg)
 	dialog.showErrorBox("An error has occured", toString(arg))
 })
+ipc.on('reload', (event, arg) => {
+	mainWindow.reload()
+})
 ipc.on('file-made', (event, arg) => {
 	const options = {
-		type: null,
+		type: 'info',
 		icon : './icon.png',
 		buttons: ['Ok'],
 		defaultId: 2,
@@ -159,6 +164,20 @@ app.on('activate', async () => {
 
 (async () => {
 	await app.whenReady();
-	Menu.setApplicationMenu(menu);
+
+
 	mainWindow = await createMainWindow();
 })();
+ipc.on('showchangelog', (event, arg) => {
+	const options = {
+		type: 'info',
+		icon : './icon.png',
+		buttons: ['Ok'],
+		defaultId: 2,
+		message: 'ALPHA DEVELOPMENT CHANGELOG for version 0.2.1: removed useless menu, added "CHANGELOG" Button in home screen.',
+	  };
+	  dialog.showMessageBox(null, options, (response, checkboxChecked) => {
+		console.log(response);
+		console.log(checkboxChecked);
+	  });
+})

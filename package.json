@@ -16,7 +16,9 @@
 		"test": "npm run lint",
 		"start": "electron .",
 		"pack": "electron-builder --dir",
-		"dist": "electron-builder --windows",
+		"dist-win": "electron-builder --windows",
+		"dist-lin": "electron-builder --linux",
+		"dist-mac": "electron-builder --mac zip",
 		"release": "np"
 	},
 	"dependencies": {
