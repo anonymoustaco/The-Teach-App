@@ -1,7 +1,7 @@
 {
 	"name": "teachapp",
 	"productName": "The Teach App",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "The App for teachers!",
 	"license": "",
 	"repository": "sindresorhus/electron-boilerplate",
